@@ -18,22 +18,19 @@ import lombok.Setter;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name="user_name")
     @JsonProperty("user_name") // Add this annotation
-
     private String username;
 
     @Column(name="user_password")
-    @JsonProperty("user_password") // Add this annotation
-
+    @JsonProperty(value = "user_password", access = JsonProperty.Access.WRITE_ONLY) // Add this annotation
     private String password;
 
     @Column(name="user_email")
     @JsonProperty("user_email") // Add this annotation
-
     private String email;
 
     @Column(name="user_status")
@@ -41,6 +38,5 @@ public class UserEntity {
 
     @Column(name="user_address")
     @JsonProperty("user_address") // Add this annotation
-
     private String address;
 }

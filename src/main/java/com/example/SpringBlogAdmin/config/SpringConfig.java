@@ -25,6 +25,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Supplier;
 //import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
@@ -80,6 +82,15 @@ public class SpringConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public Supplier<Long> idGenerator() {
+        return () -> {
+            long timestamp = System.currentTimeMillis();
+            int random = ThreadLocalRandom.current().nextInt(1000, 10000);
+            return timestamp + random;
+        };
     }
 
     @Bean

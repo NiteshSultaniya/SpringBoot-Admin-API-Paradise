@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -37,14 +38,25 @@ public class UserController {
         return ResponseEntity.ok(data);
     }
 
-    @PostMapping("/add-user")
-    public ResponseEntity<?> adduser(@RequestBody UserEntity user) {
-        String obj = userService.adduser(user);
+    @GetMapping("/find-by-id/{id}")
+    public ResponseEntity<?> findUserById(@PathVariable Long id)
+    {
+        Optional<UserEntity> obj = userService.findUserById(id);
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("status", "success");
-        data.put("msg", obj);
+        if (obj.isEmpty()) {
+            data.put("status", "success");
+            data.put("data", "data not found");
+        } else {
+            data.put("status", "success");
+            data.put("data", obj);
+        }
         return ResponseEntity.ok(data);
+    }
 
+    @PostMapping("/add-user-process")
+    public ResponseEntity<?> adduser(@RequestBody UserEntity user) {
+        Map<String,Object> obj = userService.adduser(user);
+        return ResponseEntity.ok(obj);
     }
 
 
