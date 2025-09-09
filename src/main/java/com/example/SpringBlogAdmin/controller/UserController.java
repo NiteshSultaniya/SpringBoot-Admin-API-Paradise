@@ -6,6 +6,7 @@ import com.example.SpringBlogAdmin.repo.UserRepo;
 import com.example.SpringBlogAdmin.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
     private final UserRepo userRepo;
 
-    public UserController(UserService userService,UserRepo userRepo) {
+    public UserController(UserService userService, UserRepo userRepo) {
         this.userService = userService;
         this.userRepo = userRepo;
     }
@@ -39,8 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/find-by-id/{id}")
-    public ResponseEntity<?> findUserById(@PathVariable Long id)
-    {
+    public ResponseEntity<?> findUserById(@PathVariable Long id) {
         Optional<UserEntity> obj = userService.findUserById(id);
         Map<String, Object> data = new LinkedHashMap<>();
         if (obj.isEmpty()) {
@@ -55,10 +55,17 @@ public class UserController {
 
     @PostMapping("/add-user-process")
     public ResponseEntity<?> adduser(@RequestBody UserEntity user) {
-        Map<String,Object> obj = userService.adduser(user);
+        Map<String, Object> obj = userService.adduser(user);
         return ResponseEntity.ok(obj);
     }
 
+//    @PostMapping("/add-user-process")
+//    public ResponseEntity<?> addUser(@ModelAttribute UserEntity user, @RequestParam("file") MultipartFile file) {
+//        System.out.println(user.getId());
+//        System.out.println(file.getOriginalFilename());
+//        Map<String, Object> result = userService.adduser(user, file);
+//        return ResponseEntity.ok("success");
+//    }
 
     @GetMapping("/user-status/{id}")
     public ResponseEntity<?> statusUpdate(@PathVariable Long id) {
@@ -76,26 +83,23 @@ public class UserController {
     }
 
     @GetMapping("/user-delete/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id)
-    {
-            Map<String, Object> data = new LinkedHashMap<>();
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        Map<String, Object> data = new LinkedHashMap<>();
         try {
-           int obj= userRepo.deleteEntityById(id);
-           if(obj>0)
-           {
-            data.put("status", "success");
-            data.put("msg", "User Deleted Successfully");
+            int obj = userRepo.deleteEntityById(id);
+            if (obj > 0) {
+                data.put("status", "success");
+                data.put("msg", "User Deleted Successfully");
 
-           }else {
-               data.put("status", "error");
-               data.put("msg", "Something went Wrong");
-           }
-        }catch (Exception e)
-        {
+            } else {
+                data.put("status", "error");
+                data.put("msg", "Something went Wrong");
+            }
+        } catch (Exception e) {
             data.put("status", "error");
             data.put("msg", "Something went Wrong");
         }
-            return ResponseEntity.ok(data);
+        return ResponseEntity.ok(data);
 
     }
 }
