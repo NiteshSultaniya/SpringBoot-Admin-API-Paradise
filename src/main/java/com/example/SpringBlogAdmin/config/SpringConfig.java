@@ -43,6 +43,7 @@ public class SpringConfig {
 
     public static final String[] PUBLIC_ENDPOINTS={
             "/api/login",
+            "/uploads/**",
     };
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,CustomAuthenticationEntryPoint entryPoint) throws Exception{

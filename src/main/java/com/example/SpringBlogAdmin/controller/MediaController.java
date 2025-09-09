@@ -29,8 +29,8 @@ public class MediaController {
     @PostMapping("/add-media-process")
     public ResponseEntity<?> addmedia(@ModelAttribute MediaEntity media, @RequestParam("file") MultipartFile file)
     {
-        System.out.println(file.getOriginalFilename());
-        System.out.println(media.getId());
-        return ResponseEntity.ok("success");
+//        return ResponseEntity.ok(file.getContentType());
+        Map<String,Object> data=mediaService.addmedia(file,media);
+        return ResponseEntity.ok(data);
     }
 }
