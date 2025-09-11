@@ -33,4 +33,17 @@ public class MediaController {
         Map<String,Object> data=mediaService.addmedia(file,media);
         return ResponseEntity.ok(data);
     }
-}
+
+    @GetMapping("/status-update/{id}")
+    public ResponseEntity<?> statusUpdate(@PathVariable Long id)
+    {
+        Map<String,Object> data=mediaService.statusUpdate(id);
+        return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("delete-media/{id}")
+    public ResponseEntity<?> deleteMedia(@PathVariable Long id)
+    {
+        Map<String,Object> data=mediaService.deleteMedia(id);
+        return ResponseEntity.ok(data);
+    }}
