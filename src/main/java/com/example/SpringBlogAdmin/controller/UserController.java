@@ -59,13 +59,6 @@ public class UserController {
         return ResponseEntity.ok(obj);
     }
 
-//    @PostMapping("/add-user-process")
-//    public ResponseEntity<?> addUser(@ModelAttribute UserEntity user, @RequestParam("file") MultipartFile file) {
-//        System.out.println(user.getId());
-//        System.out.println(file.getOriginalFilename());
-//        Map<String, Object> result = userService.adduser(user, file);
-//        return ResponseEntity.ok("success");
-//    }
 
     @GetMapping("/user-status/{id}")
     public ResponseEntity<?> statusUpdate(@PathVariable Long id) {

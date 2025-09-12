@@ -13,7 +13,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/media")
 public class MediaController {
-    private MediaService mediaService;
+    private final MediaService mediaService;
 
     public MediaController(MediaService mediaService){
         this.mediaService=mediaService;

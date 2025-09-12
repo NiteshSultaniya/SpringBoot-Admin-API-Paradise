@@ -16,6 +16,9 @@ public interface UserRepo extends BaseRepository<UserEntity,Long> {
 
 //    Boolean findByEmail(String email);
 
+    @Query("SELECT COUNT(u) > 0 FROM #{#entityName} u WHERE u.username=:name")
+    Boolean findByName(@Param("name") String name);
+
     @Query("SELECT COUNT(u) > 0 FROM UserEntity u WHERE u.email=:email")
     Boolean findByEmail(@Param("email") String email);
 

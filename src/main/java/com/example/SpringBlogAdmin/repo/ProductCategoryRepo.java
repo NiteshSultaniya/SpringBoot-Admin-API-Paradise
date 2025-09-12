@@ -1,13 +1,14 @@
 package com.example.SpringBlogAdmin.repo;
 
 import com.example.SpringBlogAdmin.config.BaseRepository;
-import com.example.SpringBlogAdmin.entity.MediaEntity;
+import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MediaRepo extends BaseRepository<MediaEntity,Long> {
-    @Query("SELECT COUNT(u) > 0 FROM #{#entityName} u WHERE u.media_name=:name")
+public interface ProductCategoryRepo extends BaseRepository<ProductCategoryEntity,Long> {
+
+    @Query("SELECT COUNT(u) > 0 FROM #{#entityName} u WHERE u.name=:name")
     Boolean findByName(@Param("name") String name);
 }

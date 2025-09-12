@@ -25,6 +25,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 //import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -83,6 +85,11 @@ public class SpringConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+
+    }
+   @Bean
+    public Map<String, Object> mapdata() {
+        return new LinkedHashMap<>();
     }
 
     @Bean

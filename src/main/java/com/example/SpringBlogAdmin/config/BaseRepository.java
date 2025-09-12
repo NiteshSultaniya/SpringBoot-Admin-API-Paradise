@@ -16,8 +16,6 @@ public interface BaseRepository<T, ID> extends JpaRepository<T,ID> {
     @Query("UPDATE #{#entityName} u SET u.status = :status WHERE u.id = :id")
     int updateStatusById(@Param("status") Integer status, @Param("id") Long id);
 
-
-
     @Modifying
     @Transactional
     @Query("DELETE FROM #{#entityName} u WHERE u.id = :id")
