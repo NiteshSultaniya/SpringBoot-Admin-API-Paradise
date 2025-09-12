@@ -1,6 +1,7 @@
 package com.example.SpringBlogAdmin.service;
 
 
+import com.example.SpringBlogAdmin.entity.MediaEntity;
 import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
 import com.example.SpringBlogAdmin.repo.ProductCategoryRepo;
 import org.springframework.stereotype.Service;
@@ -120,6 +121,28 @@ public class ProductCategoryService {
             mapdata.put("status", 200);
             mapdata.put("msg", "Status Updated Succesffulyy");
             return mapdata;
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return mapdata;
+        }
+    }
+
+    public Map<String, Object> categoryDelete(Long id) {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            ProductCategoryEntity cat=productCategoryRepo.findById(id).orElseThrow();
+            int rowEffected = productCategoryRepo.deleteEntityById(id);
+            if(rowEffected>0)
+            {
+            mapdata.put("status", 200);
+            mapdata.put("msg", "Category Deleted Successfully");
+            return mapdata;
+            }else{
+                mapdata.put("status", 201);
+                mapdata.put("msg", "Something Went Wrong");
+                return mapdata;
+            }
         } catch (Exception e) {
             mapdata.put("status", 400);
             mapdata.put("msg", e.getMessage());

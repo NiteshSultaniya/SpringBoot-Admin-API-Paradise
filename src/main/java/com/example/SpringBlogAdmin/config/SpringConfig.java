@@ -85,12 +85,8 @@ public class SpringConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
 
-    }
-   @Bean
-    public Map<String, Object> mapdata() {
-        return new LinkedHashMap<>();
-    }
 
     @Bean
     public Supplier<Long> idGenerator() {

@@ -1,29 +1,28 @@
 package com.example.SpringBlogAdmin.controller;
 
-
-import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
-import com.example.SpringBlogAdmin.service.ProductCategoryService;
+import com.example.SpringBlogAdmin.entity.ProductEntity;
+import com.example.SpringBlogAdmin.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/product/category")
-public class ProductCategoryController {
-    private final ProductCategoryService productCategoryService;
-
-    public ProductCategoryController(ProductCategoryService productCategoryService) {
-        this.productCategoryService = productCategoryService;
+@RequestMapping("/api/product")
+public class ProductController {
+    private ProductService productService;
+    public ProductController(ProductService productService)
+    {
+        this.productService=productService;
     }
 
-    @GetMapping("/all-category")
-    public ResponseEntity<?> allCtegory() {
+    @GetMapping("/all-product")
+    public ResponseEntity<?> allProduct() {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-
         try {
-            Map<String, Object> obj = productCategoryService.allCtegory();
+            Map<String, Object> obj = productService.allProduct();
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
@@ -32,12 +31,11 @@ public class ProductCategoryController {
         }
     }
 
-    @GetMapping("/find-category-by-id/{id}")
-    public ResponseEntity<?> categoryById(@PathVariable("id") Long id) {
+    @GetMapping("/find-product-by-id/{id}")
+    public ResponseEntity<?> productById(@PathVariable("id") Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-
         try {
-            Map<String, Object> obj = productCategoryService.categoryById(id);
+            Map<String, Object> obj = productService.productById(id);
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
@@ -45,12 +43,11 @@ public class ProductCategoryController {
             return ResponseEntity.ok(mapdata);
         }
     }
-    @PostMapping("/category-add-process")
-    public ResponseEntity<?> categoryProcess(@RequestBody ProductCategoryEntity productCategoryEntity) {
+    @PostMapping("/product-add-process")
+    public ResponseEntity<?> productProcess(@ModelAttribute ProductEntity productEntity, @RequestParam("product_image") MultipartFile file) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-
         try {
-            Map<String, Object> obj = productCategoryService.categoryProcess(productCategoryEntity);
+            Map<String, Object> obj = productService.productProcess(productEntity,file);
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
@@ -58,12 +55,11 @@ public class ProductCategoryController {
             return ResponseEntity.ok(mapdata);
         }
     }
-    @GetMapping("/category-status-update/{id}")
+    @GetMapping("/product-status-update/{id}")
     public ResponseEntity<?> statusUpdate(@PathVariable("id") Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-
         try {
-            Map<String, Object> obj = productCategoryService.statusUpdate(id);
+            Map<String, Object> obj = productService.statusUpdate(id);
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
@@ -72,12 +68,11 @@ public class ProductCategoryController {
         }
     }
 
-    @GetMapping("/category-delete/{id}")
-    public ResponseEntity<?> categoryDelete(@PathVariable("id") Long id) {
+    @GetMapping("/product-delete/{id}")
+    public ResponseEntity<?> productDelete(@PathVariable("id") Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-
         try {
-            Map<String, Object> obj = productCategoryService.categoryDelete(id);
+            Map<String, Object> obj = productService.productDelete(id);
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
