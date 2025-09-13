@@ -2,6 +2,7 @@ package com.example.SpringBlogAdmin.service;
 
 import com.example.SpringBlogAdmin.entity.ProductEntity;
 import com.example.SpringBlogAdmin.repo.ProductRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,12 +12,17 @@ import java.util.function.Supplier;
 
 @Service
 public class ProductService {
-    private ProductRepo productRepo;
-    private Supplier<Long> idGenerator;
-    public ProductService(ProductRepo productRepo,Supplier<Long> idGenerator)
-    {
-        this.productRepo=productRepo;
-        this.idGenerator=idGenerator;
+    private final ProductRepo productRepo;
+    private final Supplier<Long> idGenerator;
+//    private final Supplier<Long> idGenerator;
+
+
+    private final String product_image_path;
+
+    public ProductService(ProductRepo productRepo, Supplier<Long> idGenerator,@Value("${product_image_path}") String product_image_path) {
+        this.productRepo = productRepo;
+        this.idGenerator = idGenerator;
+        this.product_image_path = product_image_path;
     }
 
 
@@ -33,6 +39,7 @@ public class ProductService {
             } else {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Fetched SuccessFully");
+                mapdata.put("product_image_path", product_image_path);
                 mapdata.put("data", productdata);
                 return mapdata;
             }
@@ -50,6 +57,7 @@ public class ProductService {
             ProductEntity obj = productRepo.findById(id).orElseThrow();
             mapdata.put("status", 200);
             mapdata.put("msg", "Data Fetched SuccessFully");
+            mapdata.put("product_image_path", product_image_path);
             mapdata.put("data", obj);
             return mapdata;
         } catch (Exception e) {
@@ -61,27 +69,27 @@ public class ProductService {
 
     public Map<String, Object> productProcess(ProductEntity product, MultipartFile file) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-
+//                System.out.println(file);
+//                return new LinkedHashMap<>();
         try {
-            System.out.println(product.getProduct_id());
-            if (product.getProduct_id() > 0 && product.getProduct_id() != null) {
-                Optional<ProductEntity> existingPrdOpt = productRepo.findById(product.getProduct_id());
+            if (product.getId() > 0 && product.getId() != null) {
+                Optional<ProductEntity> existingPrdOpt = productRepo.findById(product.getId());
                 if (existingPrdOpt.isEmpty()) {
                     mapdata.put("status", 201);
                     mapdata.put("msg", "Product not found");
                     return mapdata;
                 }
                 ProductEntity existingCat = existingPrdOpt.get();
-                if (!existingCat.getProduct_name().equals(product.getProduct_name())) {
-                    Boolean productAlreadyExists = productRepo.findByName(product.getProduct_name());
+                if (!existingCat.getProductName().equals(product.getProductName())) {
+                    Boolean productAlreadyExists = productRepo.existsByProductName(product.getProductName());
                     if (productAlreadyExists) {
                         mapdata.put("status", 201);
                         mapdata.put("msg", "Product already exists");
                         return mapdata;
                     }
                 }
-
                 if (file != null && !file.isEmpty()) {
+
                     String uploadDir = new File("src/main/resources/static/uploads/product/").getAbsolutePath();
                     File dir = new File(uploadDir);
                     if (!dir.exists()) {
@@ -97,16 +105,16 @@ public class ProductService {
                     String filePath = uploadDir + File.separator + fileName;
                     file.transferTo(new File(filePath));
 
-                    product.setProduct_image(fileName);   // add field mediaPath in your entity
+                    product.setProductImage(fileName);   // add field mediaPath in your entity
                 }
-
-
                 productRepo.save(product);
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Updated Successfully");
                 return mapdata;
             } else {
-                Boolean prdExists = productRepo.findByName(product.getProduct_name());
+                Boolean prdExists = productRepo.existsByProductName(product.getProductName());
+
+                System.out.println(prdExists.booleanValue());
                 if (prdExists) {
                     mapdata.put("status", 201);
                     mapdata.put("msg", "Product already exists");
@@ -127,11 +135,11 @@ public class ProductService {
                         String fileName = System.currentTimeMillis() + extension;
                         String filePath = uploadDir + File.separator + fileName;
                         file.transferTo(new File(filePath));
-                        product.setProduct_image(fileName);   // add field mediaPath in your entity
+                        product.setProductImage(fileName);   // add field mediaPath in your entity
                     }
-                    product.setProduct_id(idGenerator.get());
-                    product.setProduct_name(product.getProduct_name());
-                    product.setProduct_slug(product.getProduct_slug());
+                    product.setId(idGenerator.get());
+                    product.setProductName(product.getProductName());
+                    product.setProductSlug(product.getProductSlug());
                     productRepo.save(product);
                     mapdata.put("status", 200);
                     mapdata.put("msg", "Product added Succesffulyy");
@@ -165,14 +173,13 @@ public class ProductService {
     public Map<String, Object> productDelete(Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            ProductEntity prd=productRepo.findById(id).orElseThrow();
+            ProductEntity prd = productRepo.findById(id).orElseThrow();
             int rowEffected = productRepo.deleteEntityById(id);
-            if(rowEffected>0)
-            {
+            if (rowEffected > 0) {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Product Deleted Successfully");
                 return mapdata;
-            }else{
+            } else {
                 mapdata.put("status", 201);
                 mapdata.put("msg", "Something Went Wrong");
                 return mapdata;

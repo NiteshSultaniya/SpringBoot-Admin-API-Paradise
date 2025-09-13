@@ -17,58 +17,50 @@ public class ProductEntity {
 
     @Id
     @Column(name = "product_id")
-    @JsonProperty("product_id")
-    private Long product_id;
+    private Long id;
 
     @Column(name = "product_name")
-    @JsonProperty("product_name")
-    private String product_name;
+    private String productName;
 
     @Column(name = "product_slug")
-    @JsonProperty("product_slug")
-    private String product_slug;
+    private String productSlug;
 
     @Column(name = "product_description")
-    @JsonProperty("product_description")
-    private String product_description;
+    private String productDescription;
 
     @Column(name = "product_quantity")
-    @JsonProperty("product_quantity")
-    private Integer product_quantity;
+    private Integer productQuantity;
 
     @Column(name = "product_quantity_gms")
-    @JsonProperty("product_quantity_gms")
-    private String product_quantity_gms;
+    private String productQuantityGms;
 
     @Column(name = "product_selling_price")
-    @JsonProperty("product_selling_price")
-    private Integer product_selling_price;
+    private Integer productSellingPrice;
 
     @Column(name = "product_discount_price")
-    @JsonProperty("product_discount_price")
-    private Integer product_discount_price;
+    private Integer productDiscountPrice;
 
     @Column(name = "product_mrp")
-    @JsonProperty("product_mrp")
-    private Integer product_mrp;
+    private Integer productMrp;
 
     @Column(name = "product_image")
-    @JsonProperty("product_image")
-    private String product_image;
+    private String productImage;
 
     @Column(name = "meta_title")
-    @JsonProperty("meta_title")
-    private String meta_title;
+    private String metaTitle;
 
     @Column(name = "meta_keyword")
-    @JsonProperty("meta_keyword")
-    private String meta_keyword;
+    private String metaKeyword;
 
     @Column(name = "meta_description")
-    @JsonProperty("meta_description")
-    private String meta_description;
+    private String metaDescription;
 
     @Column(name = "status")
-    @JsonProperty("status")
     private Integer status=1;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_cat_id", referencedColumnName = "cat_id")
+    private ProductCategoryEntity category;
+
 }

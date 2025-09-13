@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepo extends BaseRepository<ProductEntity,Long> {
-    @Query("SELECT COUNT(u) > 0 FROM #{#entityName} u WHERE u.name=:name")
-    Boolean findByName(@Param("name") String name);
+
+//    Boolean exis(@Param("product_name") String product_name);
+    Boolean existsByProductName(String productName);
 }

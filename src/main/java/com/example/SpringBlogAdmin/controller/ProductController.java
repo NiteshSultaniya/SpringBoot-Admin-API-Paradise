@@ -12,10 +12,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
-    private ProductService productService;
-    public ProductController(ProductService productService)
-    {
-        this.productService=productService;
+    private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     @GetMapping("/all-product")
@@ -43,18 +43,23 @@ public class ProductController {
             return ResponseEntity.ok(mapdata);
         }
     }
+
     @PostMapping("/product-add-process")
-    public ResponseEntity<?> productProcess(@ModelAttribute ProductEntity productEntity, @RequestParam("product_image") MultipartFile file) {
+    public ResponseEntity<?> productProcess(@ModelAttribute ProductEntity productEntity, @RequestParam(value="file", required = false) MultipartFile file) {
+//        System.out.println(file);
+//        System.out.println(productEntity.getId());
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            Map<String, Object> obj = productService.productProcess(productEntity,file);
+            Map<String, Object> obj = productService.productProcess(productEntity, file);
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
             mapdata.put("msg", e.getMessage());
             return ResponseEntity.ok(mapdata);
         }
+//            return ResponseEntity.ok("suces");
     }
+
     @GetMapping("/product-status-update/{id}")
     public ResponseEntity<?> statusUpdate(@PathVariable("id") Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
