@@ -1,12 +1,15 @@
 package com.example.SpringBlogAdmin.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -32,4 +35,7 @@ public class ProductCategoryEntity {
     @Column(name = "status")
     @JsonProperty("status")
     private Integer status=1;
+
+
+
 }

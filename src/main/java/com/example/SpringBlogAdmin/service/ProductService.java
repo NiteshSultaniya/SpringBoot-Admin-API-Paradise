@@ -1,6 +1,8 @@
 package com.example.SpringBlogAdmin.service;
 
+import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
 import com.example.SpringBlogAdmin.entity.ProductEntity;
+import com.example.SpringBlogAdmin.repo.ProductCategoryRepo;
 import com.example.SpringBlogAdmin.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,22 +15,23 @@ import java.util.function.Supplier;
 @Service
 public class ProductService {
     private final ProductRepo productRepo;
+    private final ProductCategoryRepo productCategoryRepo;
     private final Supplier<Long> idGenerator;
 //    private final Supplier<Long> idGenerator;
 
 
     private final String product_image_path;
 
-    public ProductService(ProductRepo productRepo, Supplier<Long> idGenerator,@Value("${product_image_path}") String product_image_path) {
+    public ProductService(ProductRepo productRepo,ProductCategoryRepo productCategoryRepo, Supplier<Long> idGenerator,@Value("${product_image_path}") String product_image_path) {
         this.productRepo = productRepo;
         this.idGenerator = idGenerator;
         this.product_image_path = product_image_path;
+        this.productCategoryRepo = productCategoryRepo;
     }
 
 
     public Map<String, Object> allProduct() {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-
         try {
             List<ProductEntity> productdata = productRepo.findAll();
             if (productdata.isEmpty()) {
@@ -182,6 +185,30 @@ public class ProductService {
             } else {
                 mapdata.put("status", 201);
                 mapdata.put("msg", "Something Went Wrong");
+                return mapdata;
+            }
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return mapdata;
+        }
+    }
+
+    public Map<String, Object> getCategoryData() {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+
+        try {
+            List<ProductCategoryEntity> categoryData = productCategoryRepo.findByStatus(1);
+
+            if (categoryData.isEmpty()) {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Not Found");
+                mapdata.put("data", new ArrayList<>());
+                return mapdata;
+            } else {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Fetched SuccessFully");
+                mapdata.put("data", categoryData);
                 return mapdata;
             }
         } catch (Exception e) {

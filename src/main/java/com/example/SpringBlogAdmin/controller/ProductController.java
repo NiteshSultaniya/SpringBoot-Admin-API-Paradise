@@ -31,6 +31,19 @@ public class ProductController {
         }
     }
 
+    @GetMapping("/get-category-data")
+    public ResponseEntity<?> getCategoryData() {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            Map<String, Object> obj = productService.getCategoryData();
+            return ResponseEntity.ok(obj);
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return ResponseEntity.ok(mapdata);
+        }
+    }
+
     @GetMapping("/find-product-by-id/{id}")
     public ResponseEntity<?> productById(@PathVariable("id") Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
@@ -46,7 +59,6 @@ public class ProductController {
 
     @PostMapping("/product-add-process")
     public ResponseEntity<?> productProcess(@ModelAttribute ProductEntity productEntity, @RequestParam(value="file", required = false) MultipartFile file) {
-//        System.out.println(file);
 //        System.out.println(productEntity.getId());
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {

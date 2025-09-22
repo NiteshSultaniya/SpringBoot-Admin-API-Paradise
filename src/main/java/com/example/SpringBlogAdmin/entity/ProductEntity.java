@@ -1,5 +1,6 @@
 package com.example.SpringBlogAdmin.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,12 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Table(name = "cs_product")
+
 public class ProductEntity {
 
     @Id
@@ -55,12 +59,10 @@ public class ProductEntity {
     @Column(name = "meta_description")
     private String metaDescription;
 
+    @Column(name = "product_cat_id")
+    private String productCatId;
+
     @Column(name = "status")
     private Integer status=1;
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_cat_id", referencedColumnName = "cat_id")
-    private ProductCategoryEntity category;
 
 }
