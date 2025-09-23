@@ -38,4 +38,8 @@ public class ProductCategoryEntity {
 
 
 
+    @Transient // tells JPA this is not a DB column
+    private List<ProductEntity> product;
+
+
 }

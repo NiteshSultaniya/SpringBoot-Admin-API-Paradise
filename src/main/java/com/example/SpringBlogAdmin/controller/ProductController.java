@@ -19,10 +19,11 @@ public class ProductController {
     }
 
     @GetMapping("/all-product")
-    public ResponseEntity<?> allProduct() {
+    public ResponseEntity<?> allProduct(@RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "5") int size) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            Map<String, Object> obj = productService.allProduct();
+            Map<String, Object> obj = productService.allProduct(page,size);
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
@@ -36,6 +37,19 @@ public class ProductController {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
             Map<String, Object> obj = productService.getCategoryData();
+            return ResponseEntity.ok(obj);
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return ResponseEntity.ok(mapdata);
+        }
+    }
+
+    @GetMapping("/category-wise-product")
+    public ResponseEntity<?> getCategoryWiseProduct() {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            Map<String, Object> obj = productService.getCategoryWiseProduct();
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);

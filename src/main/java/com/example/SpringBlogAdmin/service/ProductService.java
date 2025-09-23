@@ -5,6 +5,9 @@ import com.example.SpringBlogAdmin.entity.ProductEntity;
 import com.example.SpringBlogAdmin.repo.ProductCategoryRepo;
 import com.example.SpringBlogAdmin.repo.ProductRepo;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,10 +33,12 @@ public class ProductService {
     }
 
 
-    public Map<String, Object> allProduct() {
+    public Map<String, Object> allProduct(int page,int size) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            List<ProductEntity> productdata = productRepo.findAll();
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<ProductEntity> productdata = productRepo.findAll(pageable);
             if (productdata.isEmpty()) {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Not Found");
@@ -209,6 +214,36 @@ public class ProductService {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Fetched SuccessFully");
                 mapdata.put("data", categoryData);
+                return mapdata;
+            }
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return mapdata;
+        }
+    }
+
+    public Map<String, Object> getCategoryWiseProduct() {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            List<ProductCategoryEntity> category = productCategoryRepo.findByStatus(1);
+
+            for(ProductCategoryEntity categoryy:category)
+            {
+//                System.out.println(categoryy.getCatProduct());
+                List<ProductEntity> productData=productRepo.findProductByCategory(categoryy.getId());
+                categoryy.setProduct(productData);
+            }
+
+            if (category.isEmpty()) {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Not Found");
+                mapdata.put("data", new ArrayList<>());
+                return mapdata;
+            } else {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Fetched SuccessFully");
+                mapdata.put("data", category);
                 return mapdata;
             }
         } catch (Exception e) {
