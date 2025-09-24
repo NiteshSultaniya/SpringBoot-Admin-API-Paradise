@@ -25,7 +25,7 @@ public class ProductService {
 
     private final String product_image_path;
 
-    public ProductService(ProductRepo productRepo,ProductCategoryRepo productCategoryRepo, Supplier<Long> idGenerator,@Value("${product_image_path}") String product_image_path) {
+    public ProductService(ProductRepo productRepo, ProductCategoryRepo productCategoryRepo, Supplier<Long> idGenerator, @Value("${product_image_path}") String product_image_path) {
         this.productRepo = productRepo;
         this.idGenerator = idGenerator;
         this.product_image_path = product_image_path;
@@ -33,22 +33,35 @@ public class ProductService {
     }
 
 
-    public Map<String, Object> allProduct(int page,int size) {
+    public Map<String, Object> allProduct(int page, int size, String filterdata) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
             Pageable pageable = PageRequest.of(page, size);
+            Page<ProductEntity> productdata = null;
+            if ("all".equals(filterdata)) {
+                productdata = productRepo.findAll(pageable);
+            } else if ("active".equals(filterdata)) {
+                productdata = productRepo.findByStatus(1, pageable);
 
-            Page<ProductEntity> productdata = productRepo.findAll(pageable);
+            } else if ("inactive".equals(filterdata)) {
+                productdata = productRepo.findByStatus(0, pageable);
+            }
+
+            mapdata.put("allproductcount", productRepo.count());
+            mapdata.put("activeproductcount", productRepo.countByStatus(1));
+            mapdata.put("inactiveproductcount", productRepo.countByStatus(0));
             if (productdata.isEmpty()) {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Not Found");
-                mapdata.put("data", new ArrayList<>());
+                mapdata.put("data", productdata);
+
                 return mapdata;
             } else {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Fetched SuccessFully");
                 mapdata.put("product_image_path", product_image_path);
                 mapdata.put("data", productdata);
+
                 return mapdata;
             }
         } catch (Exception e) {
@@ -77,8 +90,6 @@ public class ProductService {
 
     public Map<String, Object> productProcess(ProductEntity product, MultipartFile file) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
-//                System.out.println(file);
-//                return new LinkedHashMap<>();
         try {
             if (product.getId() > 0 && product.getId() != null) {
                 Optional<ProductEntity> existingPrdOpt = productRepo.findById(product.getId());
@@ -181,7 +192,7 @@ public class ProductService {
     public Map<String, Object> productDelete(Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            ProductEntity prd = productRepo.findById(id).orElseThrow();
+            productRepo.findById(id).orElseThrow();
             int rowEffected = productRepo.deleteEntityById(id);
             if (rowEffected > 0) {
                 mapdata.put("status", 200);
@@ -228,10 +239,9 @@ public class ProductService {
         try {
             List<ProductCategoryEntity> category = productCategoryRepo.findByStatus(1);
 
-            for(ProductCategoryEntity categoryy:category)
-            {
+            for (ProductCategoryEntity categoryy : category) {
 //                System.out.println(categoryy.getCatProduct());
-                List<ProductEntity> productData=productRepo.findProductByCategory(categoryy.getId());
+                List<ProductEntity> productData = productRepo.findProductByCategory(categoryy.getId());
                 categoryy.setProduct(productData);
             }
 

@@ -100,7 +100,7 @@ public class SpringConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/","http://10.21.158.115:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/","http://10.44.208.115:5173/","http://10.44.208.223:5173/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
