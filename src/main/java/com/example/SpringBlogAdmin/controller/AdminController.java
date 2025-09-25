@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -21,38 +20,30 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-
-    @GetMapping("/admin")
-    public ResponseEntity<?> getAdmin() {
-
-        Map<String, Object> userData = new LinkedHashMap<>();
-        List<AdminEntity> userDataa = adminService.getAdmin();
-        if (userDataa.isEmpty()) {
-            userData.put("status", "success");
-            userData.put("userData", "Data Not Found");
-        } else {
-            userData.put("status", "success");
-            userData.put("userData", userDataa);
-        }
-        return ResponseEntity.ok(userData);
-    }
-
     @PostMapping("/login")
-    public ResponseEntity<?> loginController(@RequestBody AdminEntity adminEntity)
-    {
-        Map<String,Object> userData=new LinkedHashMap<>();
-        String token= adminService.login(adminEntity);
-        userData.put("status","Success");
-        userData.put("token",token);
-        return ResponseEntity.ok(userData);
+    public ResponseEntity<?> loginController(@RequestBody AdminEntity adminEntity) {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            Map<String, Object> obj = adminService.login(adminEntity);
+            return ResponseEntity.ok(obj);
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return ResponseEntity.ok(mapdata);
+        }
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<?> verify()
-    {
-        Map<String,Object> userData=new LinkedHashMap<>();
-        userData.put("status",200);
-        userData.put("msg","User is Authenticated");
-        return ResponseEntity.ok(userData);
+    public ResponseEntity<?> verify() {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            mapdata.put("status", 200);
+            mapdata.put("msg", "User is Authenticated");
+            return ResponseEntity.ok(mapdata);
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return ResponseEntity.ok(mapdata);
+        }
     }
 }

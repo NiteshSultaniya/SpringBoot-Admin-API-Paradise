@@ -28,10 +28,10 @@ public class JwtService {
         this.secretKey = Keys.hmacShaKeyFor(secreateKey);
     }
 
-    public String generateToken(AdminEntity user) {
-        Map<String, Object> claim = new HashMap();
+    public String generateToken(AdminEntity user,Map<String, Object> claims) {
+//        Map<String, Object> claim = new HashMap();
 //        System.out.println(user.getUsername());
-        return Jwts.builder().setClaims(claim)
+        return Jwts.builder().setClaims(claims)
                 .setSubject(user.getUsername())
                 .setIssuer("DCB")
                 .setIssuedAt(new Date(System.currentTimeMillis()))

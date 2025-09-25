@@ -68,14 +68,14 @@ public class SpringConfig {
     }
 
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider()
-    {
-        DaoAuthenticationProvider authProvider=new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+//    @Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider()
+//    {
+//        DaoAuthenticationProvider authProvider=new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService);
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//        return authProvider;
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
