@@ -3,6 +3,8 @@ package com.example.SpringBlogAdmin.repo;
 import com.example.SpringBlogAdmin.config.BaseRepository;
 import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
 import com.example.SpringBlogAdmin.entity.ProductEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -18,4 +20,10 @@ public interface ProductRepo extends BaseRepository<ProductEntity,Long> {
 
     @Query(value = "SELECT * FROM cs_product p WHERE FIND_IN_SET(:id, p.product_cat_id)", nativeQuery = true)
     List<ProductEntity> findProductByCategory(@Param("id") Long id);
+
+
+    Page<ProductEntity> findByStatus(int status, Pageable pageable);
+
+    long countByStatus(int status);
+
 }
