@@ -3,8 +3,8 @@ package com.example.SpringBlogAdmin.service;
 import com.example.SpringBlogAdmin.config.CustomUserDetailsService;
 import com.example.SpringBlogAdmin.config.JwtService;
 import com.example.SpringBlogAdmin.entity.AdminEntity;
+import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
 import com.example.SpringBlogAdmin.repo.AdminRepo;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,10 +13,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Supplier;
 
 @Service
 public class AdminService {
@@ -25,16 +23,126 @@ public class AdminService {
     public PasswordEncoder passwordEncoder;
     public AuthenticationManager authenticationManager;
     private CustomUserDetailsService customUserDetailsService;
+    private Supplier<Long> idGenerator;
 
-
-    public AdminService(AdminRepo adminRepo,CustomUserDetailsService customUserDetailsService,JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AdminService(AdminRepo adminRepo,CustomUserDetailsService customUserDetailsService,JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,Supplier<Long> idGenerator) {
         this.adminRepo = adminRepo;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.customUserDetailsService = customUserDetailsService;
+        this.idGenerator = idGenerator;
     }
 
+
+    public List<AdminEntity> getalluser() {
+        try {
+            List<AdminEntity> obj = adminRepo.findAll();
+            return obj;
+        } catch (Exception e) {
+            System.err.println("Error fetching users: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public Optional<AdminEntity> findUserById(Long id) {
+        try {
+            Optional<AdminEntity> obj = adminRepo.findById(id);
+            return obj;
+        } catch (Exception e) {
+            System.err.println("Error fetching users: " + e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+
+    public Boolean statusUpdate(Long id) {
+        try {
+            AdminEntity user = adminRepo.findById(id).orElseThrow();
+            Integer currentStatus = user.getStatus();
+            Integer newStatus = (currentStatus == 1) ? 0 : 1;
+            adminRepo.updateStatusById(newStatus, id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public Map<String, Object> createUser(AdminEntity user) {
+        Map<String, Object> data = new LinkedHashMap<>();
+        System.out.println(user.getId());
+        try {
+            if (user.getId() > 0 && user.getId() != null) {
+                Optional<AdminEntity> existingUserOpt = adminRepo.findById(user.getId());
+                if (existingUserOpt.isEmpty()) {
+                    data.put("status", 404);
+                    data.put("msg", "User not found");
+                    return data;
+                }
+                AdminEntity existingUser = existingUserOpt.get();
+                if (!existingUser.getEmail().equals(user.getEmail())) {
+                    Boolean emailAlreadyExists = adminRepo.findByEmail(user.getEmail());
+                    if (emailAlreadyExists) {
+                        data.put("status", 201);
+                        data.put("msg", "Email already exists");
+                        return data;
+                    }
+                }
+                if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+                    user.setPassword(passwordEncoder.encode(user.getPassword().trim()));
+                }else{
+                    user.setPassword(existingUser.getPassword());
+                }
+                adminRepo.save(user);
+                data.put("status", 200);
+                data.put("msg", "Data Updated Successfully");
+                return data;
+            } else {
+                Boolean useremailexist = adminRepo.findByEmail(user.getEmail().trim());
+                if (useremailexist) {
+                    data.put("status", 201);
+                    data.put("msg", "Email already exists");
+                    return data;
+                } else {
+                    user.setId(idGenerator.get());
+                    user.setEmail(user.getEmail().trim());
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
+                    adminRepo.save(user);
+                    data.put("status", 200);
+                    data.put("msg", "User added Succeffulyy");
+                    return data;
+                }
+            }
+        } catch (Exception e) {
+            data.put("status", 400);
+            data.put("msg",e.getMessage());
+            return data;
+        }
+    }
+
+
+    public Map<String, Object> userDelete(Long id) {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            AdminEntity cat=adminRepo.findById(id).orElseThrow();
+            int rowEffected = adminRepo.deleteEntityById(id);
+            if(rowEffected>0)
+            {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "User Deleted Successfully");
+                return mapdata;
+            }else{
+                mapdata.put("status", 201);
+                mapdata.put("msg", "Something Went Wrong");
+                return mapdata;
+            }
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return mapdata;
+        }
+    }
 
     public Map<String,Object> login(AdminEntity user) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
@@ -47,13 +155,11 @@ public class AdminService {
                 AdminEntity admindata=adminRepo.findByUsername(user.getUsername());
                 Map<String, Object> claims = new HashMap<>();
                 claims.put("role", admindata.getRole());
-                String token=jwtService.generateToken(user, claims);
+                String token=jwtService.generateToken(admindata, claims);
                 mapdata.put("role",admindata.getRole());
                 mapdata.put("token",token);
                 mapdata.put("status","Success");
-//                    return token;
                 return mapdata;
-
             }else {
                 mapdata.put("status", 401);
                 mapdata.put("msg", "Bad Credential");

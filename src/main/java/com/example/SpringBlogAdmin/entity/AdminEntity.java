@@ -15,7 +15,6 @@ import lombok.Setter;
 @Table(name = "cs_admin")
 public class AdminEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username")
@@ -33,9 +32,6 @@ public class AdminEntity {
     @Column(name = "mobile")
     private Long mobile;
 
-    @Column(name = "token")
-    private String token;
-
     @Column(name = "status")
-    private Integer status;
+    private Integer status=1;
 }
