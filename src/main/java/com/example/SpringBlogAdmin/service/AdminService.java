@@ -3,13 +3,13 @@ package com.example.SpringBlogAdmin.service;
 import com.example.SpringBlogAdmin.config.CustomUserDetailsService;
 import com.example.SpringBlogAdmin.config.JwtService;
 import com.example.SpringBlogAdmin.entity.AdminEntity;
-import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
+import com.example.SpringBlogAdmin.entity.RoleEntity;
 import com.example.SpringBlogAdmin.repo.AdminRepo;
+import com.example.SpringBlogAdmin.repo.RoleRepo;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,29 +19,43 @@ import java.util.function.Supplier;
 @Service
 public class AdminService {
     public AdminRepo adminRepo;
+    public RoleRepo roleRepo;
     public JwtService jwtService;
     public PasswordEncoder passwordEncoder;
     public AuthenticationManager authenticationManager;
-    private CustomUserDetailsService customUserDetailsService;
-    private Supplier<Long> idGenerator;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final Supplier<Long> idGenerator;
 
-    public AdminService(AdminRepo adminRepo,CustomUserDetailsService customUserDetailsService,JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,Supplier<Long> idGenerator) {
+    public AdminService(AdminRepo adminRepo,RoleRepo roleRepo, CustomUserDetailsService customUserDetailsService, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, Supplier<Long> idGenerator) {
         this.adminRepo = adminRepo;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.customUserDetailsService = customUserDetailsService;
         this.idGenerator = idGenerator;
+        this.roleRepo = roleRepo;
     }
 
 
-    public List<AdminEntity> getalluser() {
+    public Map<String, Object> getalluser() {
+        Map<String, Object> data = new LinkedHashMap<>();
+
         try {
             List<AdminEntity> obj = adminRepo.findAll();
-            return obj;
+            List<RoleEntity> roledata = roleRepo.activeStatusData();
+            if (obj.isEmpty()) {
+                data.put("status", "success");
+                data.put("data", "data not found");
+            } else {
+                data.put("status", "success");
+                data.put("data", obj);
+            }
+            data.put("roleData",roledata);
+            return data;
         } catch (Exception e) {
             System.err.println("Error fetching users: " + e.getMessage());
-            return new ArrayList<>();
+            data.put("data", e.getMessage());
+            return data;
         }
     }
 
@@ -91,7 +105,7 @@ public class AdminService {
                 }
                 if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
                     user.setPassword(passwordEncoder.encode(user.getPassword().trim()));
-                }else{
+                } else {
                     user.setPassword(existingUser.getPassword());
                 }
                 adminRepo.save(user);
@@ -116,7 +130,7 @@ public class AdminService {
             }
         } catch (Exception e) {
             data.put("status", 400);
-            data.put("msg",e.getMessage());
+            data.put("msg", e.getMessage());
             return data;
         }
     }
@@ -125,14 +139,13 @@ public class AdminService {
     public Map<String, Object> userDelete(Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            AdminEntity cat=adminRepo.findById(id).orElseThrow();
+            AdminEntity cat = adminRepo.findById(id).orElseThrow();
             int rowEffected = adminRepo.deleteEntityById(id);
-            if(rowEffected>0)
-            {
+            if (rowEffected > 0) {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "User Deleted Successfully");
                 return mapdata;
-            }else{
+            } else {
                 mapdata.put("status", 201);
                 mapdata.put("msg", "Something Went Wrong");
                 return mapdata;
@@ -144,23 +157,23 @@ public class AdminService {
         }
     }
 
-    public Map<String,Object> login(AdminEntity user) {
+    public Map<String, Object> login(AdminEntity user) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
 
-            Authentication authentication=authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(),user.getPassword()));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
-            if(authentication.isAuthenticated()){
-                UserDetails userDetails =customUserDetailsService.loadUserByUsername(user.getUsername());
-                AdminEntity admindata=adminRepo.findByUsername(user.getUsername());
+            if (authentication.isAuthenticated()) {
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getUsername());
+                AdminEntity admindata = adminRepo.findByUsername(user.getUsername());
                 Map<String, Object> claims = new HashMap<>();
                 claims.put("role", admindata.getRole());
-                String token=jwtService.generateToken(admindata, claims);
-                mapdata.put("role",admindata.getRole());
-                mapdata.put("token",token);
-                mapdata.put("status","Success");
+                String token = jwtService.generateToken(admindata, claims);
+                mapdata.put("role", admindata.getRole());
+                mapdata.put("token", token);
+                mapdata.put("status", "Success");
                 return mapdata;
-            }else {
+            } else {
                 mapdata.put("status", 401);
                 mapdata.put("msg", "Bad Credential");
                 return mapdata;
@@ -169,7 +182,8 @@ public class AdminService {
         } catch (Exception e) {
             mapdata.put("status", 400);
             mapdata.put("msg", e.getMessage());
-            return mapdata;        }
+            return mapdata;
+        }
     }
 
 }

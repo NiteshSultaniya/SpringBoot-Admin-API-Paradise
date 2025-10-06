@@ -39,16 +39,8 @@ public class AdminController {
 
     @GetMapping("/all-user")
     public ResponseEntity<?> getalluser() {
-        Map<String, Object> data = new LinkedHashMap<>();
-        List<AdminEntity> obj = adminService.getalluser();
-        if (obj.isEmpty()) {
-            data.put("status", "success");
-            data.put("data", "data not found");
-        } else {
-            data.put("status", "success");
-            data.put("data", obj);
-        }
-        return ResponseEntity.ok(data);
+        Map<String, Object> obj = adminService.getalluser();
+        return ResponseEntity.ok(obj);
     }
 
     @GetMapping("/find-by-id/{id}")

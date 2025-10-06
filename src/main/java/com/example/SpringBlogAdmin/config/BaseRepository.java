@@ -7,6 +7,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @NoRepositoryBean
 public interface BaseRepository<T, ID> extends JpaRepository<T,ID> {
@@ -20,4 +22,7 @@ public interface BaseRepository<T, ID> extends JpaRepository<T,ID> {
     @Transactional
     @Query("DELETE FROM #{#entityName} u WHERE u.id = :id")
     int deleteEntityById(@Param("id") Long id); // Returns number of affected rows
+
+    @Query("SELECT u FROM #{#entityName} u WHERE u.status = 1")
+    List<T> activeStatusData(); // Returns number of affected rows
 }
