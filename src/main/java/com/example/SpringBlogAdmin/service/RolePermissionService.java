@@ -1,6 +1,8 @@
 package com.example.SpringBlogAdmin.service;
 
+import com.example.SpringBlogAdmin.entity.PermissionEntity;
 import com.example.SpringBlogAdmin.entity.RoleEntity;
+import com.example.SpringBlogAdmin.repo.PermissionRepo;
 import com.example.SpringBlogAdmin.repo.RoleRepo;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +13,13 @@ import java.util.function.Supplier;
 public class RolePermissionService {
 
     private final RoleRepo roleRepo;
+    private final PermissionRepo permissionRepo;
     private final Supplier<Long> idGenerator;
 
-    public RolePermissionService(RoleRepo roleRepo, Supplier<Long> idGenerator) {
+    public RolePermissionService(RoleRepo roleRepo, Supplier<Long> idGenerator,PermissionRepo permissionRepo) {
         this.roleRepo = roleRepo;
         this.idGenerator = idGenerator;
+        this.permissionRepo = permissionRepo;
     }
 
 
@@ -26,6 +30,29 @@ public class RolePermissionService {
 
         try {
             List<RoleEntity> roleData = roleRepo.findAll();
+            if (roleData.isEmpty()) {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Not Found");
+                mapdata.put("data", new ArrayList<>());
+                return mapdata;
+            } else {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Fetched SuccessFully");
+                mapdata.put("data", roleData);
+                return mapdata;
+            }
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return mapdata;
+        }
+    }
+
+    public Map<String, Object> allactiveRole() {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+
+        try {
+            List<RoleEntity> roleData = roleRepo.activeStatusData();
             if (roleData.isEmpty()) {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Not Found");
@@ -138,6 +165,61 @@ public class RolePermissionService {
             }else{
                 mapdata.put("status", 201);
                 mapdata.put("msg", "Something Went Wrong");
+                return mapdata;
+            }
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return mapdata;
+        }
+    }
+
+    public Map<String, Object> addPermission(PermissionEntity permission) {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            PermissionEntity permissionCheck = permissionRepo.findByPermissionRoleIdAndPermissionType(permission.getPermissionRoleId(),permission.getPermissionType());
+                if(permissionCheck != null)
+                {
+                    System.out.println(permissionCheck.getStatus());
+//                    permission.setStatus(1);
+//                    permissionRepo.save(permission);
+//                        if()
+                    Integer currentStatus = permissionCheck.getStatus();
+                    Integer newStatus = (currentStatus == 1) ? 0 : 1;
+                    permissionRepo.updateStatusById(newStatus, permissionCheck.getId());
+
+                }else {
+                    System.out.println("dta not found");
+                    permission.setId(idGenerator.get());
+                    permission.setPermissionRoleId(permission.getPermissionRoleId());
+                    permission.setPermissionType(permission.getPermissionType());
+
+                    permissionRepo.save(permission);
+                }
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Permission Added Successfully");
+                return mapdata;
+
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return mapdata;
+        }
+    }
+
+    public Map<String, Object> allPermission() {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            List<PermissionEntity> roleData = permissionRepo.findAll();
+            if (roleData.isEmpty()) {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Not Found");
+                mapdata.put("data", new ArrayList<>());
+                return mapdata;
+            } else {
+                mapdata.put("status", 200);
+                mapdata.put("msg", "Data Fetched SuccessFully");
+                mapdata.put("data", roleData);
                 return mapdata;
             }
         } catch (Exception e) {
