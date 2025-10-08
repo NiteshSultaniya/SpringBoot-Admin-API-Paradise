@@ -87,6 +87,7 @@ public class AdminService {
         Map<String, Object> data = new LinkedHashMap<>();
         System.out.println(user.getId());
         try {
+           Optional<RoleEntity> roleData=roleRepo.findById(user.getRoleId());
             if (user.getId() > 0 && user.getId() != null) {
                 Optional<AdminEntity> existingUserOpt = adminRepo.findById(user.getId());
                 if (existingUserOpt.isEmpty()) {
@@ -108,6 +109,10 @@ public class AdminService {
                 } else {
                     user.setPassword(existingUser.getPassword());
                 }
+                if(roleData.isPresent())
+                {
+                    user.setRoleName(roleData.get().getRoleName());
+                }
                 adminRepo.save(user);
                 data.put("status", 200);
                 data.put("msg", "Data Updated Successfully");
@@ -122,6 +127,12 @@ public class AdminService {
                     user.setId(idGenerator.get());
                     user.setEmail(user.getEmail().trim());
                     user.setPassword(passwordEncoder.encode(user.getPassword()));
+                    user.setRoleId(user.getRoleId());
+                    if(roleData.isPresent())
+                    {
+                    user.setRoleName(roleData.get().getRoleName());
+
+                    }
                     adminRepo.save(user);
                     data.put("status", 200);
                     data.put("msg", "User added Succeffulyy");
@@ -167,9 +178,12 @@ public class AdminService {
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getUsername());
                 AdminEntity admindata = adminRepo.findByUsername(user.getUsername());
                 Map<String, Object> claims = new HashMap<>();
-                claims.put("role", admindata.getRole());
+                System.out.print(admindata.getId());
+                claims.put("roleId", admindata.getRoleId());
+                claims.put("roleName", admindata.getRoleName());
+                claims.put("userId", admindata.getId());
                 String token = jwtService.generateToken(admindata, claims);
-                mapdata.put("role", admindata.getRole());
+                mapdata.put("roleName", admindata.getRoleName());
                 mapdata.put("token", token);
                 mapdata.put("status", "Success");
                 return mapdata;
