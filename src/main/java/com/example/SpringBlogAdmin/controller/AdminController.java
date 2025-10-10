@@ -104,6 +104,19 @@ public class AdminController {
         }
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> registerController(@RequestBody AdminEntity adminEntity) {
+        Map<String, Object> mapdata = new LinkedHashMap<>();
+        try {
+            Map<String, Object> obj = adminService.createUser(adminEntity);
+            return ResponseEntity.ok(obj);
+        } catch (Exception e) {
+            mapdata.put("status", 400);
+            mapdata.put("msg", e.getMessage());
+            return ResponseEntity.ok(mapdata);
+        }
+    }
+
     @GetMapping("/verify")
     public ResponseEntity<?> verify() {
         Map<String, Object> mapdata = new LinkedHashMap<>();

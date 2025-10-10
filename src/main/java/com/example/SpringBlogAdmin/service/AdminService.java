@@ -132,6 +132,8 @@ public class AdminService {
                     {
                     user.setRoleName(roleData.get().getRoleName());
 
+                    }else{
+                        user.setRoleName("GUEST");
                     }
                     adminRepo.save(user);
                     data.put("status", 200);

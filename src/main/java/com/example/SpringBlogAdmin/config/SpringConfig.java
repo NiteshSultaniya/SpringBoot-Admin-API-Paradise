@@ -45,6 +45,7 @@ public class SpringConfig {
 
     public static final String[] PUBLIC_ENDPOINTS={
             "/api/login",
+            "/api/register",
             "/uploads/**",
     };
     @Bean
