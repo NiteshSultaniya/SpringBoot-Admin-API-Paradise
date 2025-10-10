@@ -45,6 +45,7 @@ public class SpringConfig {
 
     public static final String[] PUBLIC_ENDPOINTS={
             "/api/login",
+            "/api/register",
             "/uploads/**",
     };
     @Bean
@@ -68,14 +69,14 @@ public class SpringConfig {
     }
 
 
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider()
-    {
-        DaoAuthenticationProvider authProvider=new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+//    @Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider()
+//    {
+//        DaoAuthenticationProvider authProvider=new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService);
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//        return authProvider;
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -100,13 +101,11 @@ public class SpringConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/","http://10.44.208.115:5173/","http://10.44.208.223:5173/"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/","http://10.44.208.115:5173/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type")); // Add this
-
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

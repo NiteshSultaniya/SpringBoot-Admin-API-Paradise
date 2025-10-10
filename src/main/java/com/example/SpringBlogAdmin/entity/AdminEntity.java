@@ -15,7 +15,6 @@ import lombok.Setter;
 @Table(name = "cs_admin")
 public class AdminEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "username")
@@ -24,8 +23,11 @@ public class AdminEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "role")
-    private String role;
+    @Column(name = "role_name")
+    private String roleName;
+
+    @Column(name = "role_id")
+    private Long roleId;
 
     @Column(name = "email")
     private String email;
@@ -33,9 +35,6 @@ public class AdminEntity {
     @Column(name = "mobile")
     private Long mobile;
 
-    @Column(name = "token")
-    private String token;
-
     @Column(name = "status")
-    private Integer status;
+    private Integer status=1;
 }
