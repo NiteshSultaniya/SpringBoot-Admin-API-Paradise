@@ -22,7 +22,11 @@ public interface ProductRepo extends BaseRepository<ProductEntity,Long> {
     List<ProductEntity> findProductByCategory(@Param("id") Long id);
 
 
-    Page<ProductEntity> findByStatus(int status, Pageable pageable);
+
+    Page<ProductEntity> findByUserId(Long userId, Pageable pageable);
+
+
+    Page<ProductEntity> findByStatusAndUserId(int status, Long userId,Pageable pageable);
 
     long countByStatus(int status);
 

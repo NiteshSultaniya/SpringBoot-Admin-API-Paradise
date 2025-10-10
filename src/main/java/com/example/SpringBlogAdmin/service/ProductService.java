@@ -1,9 +1,13 @@
 package com.example.SpringBlogAdmin.service;
 
+import com.example.SpringBlogAdmin.config.JwtService;
+import com.example.SpringBlogAdmin.config.SpringConfig;
 import com.example.SpringBlogAdmin.entity.ProductCategoryEntity;
 import com.example.SpringBlogAdmin.entity.ProductEntity;
 import com.example.SpringBlogAdmin.repo.ProductCategoryRepo;
 import com.example.SpringBlogAdmin.repo.ProductRepo;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,30 +25,33 @@ public class ProductService {
     private final ProductCategoryRepo productCategoryRepo;
     private final Supplier<Long> idGenerator;
 //    private final Supplier<Long> idGenerator;
+    private JwtService jwtService;
 
 
     private final String product_image_path;
 
-    public ProductService(ProductRepo productRepo, ProductCategoryRepo productCategoryRepo, Supplier<Long> idGenerator, @Value("${product_image_path}") String product_image_path) {
+    public ProductService(ProductRepo productRepo,JwtService jwtService, ProductCategoryRepo productCategoryRepo, Supplier<Long> idGenerator, @Value("${product_image_path}") String product_image_path) {
         this.productRepo = productRepo;
         this.idGenerator = idGenerator;
         this.product_image_path = product_image_path;
         this.productCategoryRepo = productCategoryRepo;
+        this.jwtService = jwtService;
     }
 
 
     public Map<String, Object> allProduct(int page, int size, String filterdata) {
+        Long userId=jwtService.extractUserId();
+
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<ProductEntity> productdata = null;
             if ("all".equals(filterdata)) {
-                productdata = productRepo.findAll(pageable);
+                productdata = productRepo.findByUserId(userId,pageable);
             } else if ("active".equals(filterdata)) {
-                productdata = productRepo.findByStatus(1, pageable);
-
+                productdata = productRepo.findByStatusAndUserId(1,userId, pageable);
             } else if ("inactive".equals(filterdata)) {
-                productdata = productRepo.findByStatus(0, pageable);
+                productdata = productRepo.findByStatusAndUserId(0,userId, pageable);
             }
 
             mapdata.put("allproductcount", productRepo.count());
@@ -89,6 +96,9 @@ public class ProductService {
     }
 
     public Map<String, Object> productProcess(ProductEntity product, MultipartFile file) {
+        System.out.println(jwtService.extractUserId().getClass().getSimpleName());
+        product.setUserId(jwtService.extractUserId());
+//        System.out.println(userData);
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
             if (product.getId() > 0 && product.getId() != null) {

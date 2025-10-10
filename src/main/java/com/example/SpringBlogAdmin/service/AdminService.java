@@ -185,7 +185,6 @@ public class AdminService {
                 claims.put("roleName", admindata.getRoleName());
                 claims.put("userId", admindata.getId());
                 String token = jwtService.generateToken(admindata, claims);
-                mapdata.put("roleName", admindata.getRoleName());
                 mapdata.put("token", token);
                 mapdata.put("status", "Success");
                 return mapdata;
