@@ -75,7 +75,9 @@ public class RolePermissionService {
     public Map<String, Object> roleById(Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            RoleEntity obj = roleRepo.findById(id).orElseThrow();
+            RoleEntity obj = roleRepo.findById(id).orElse( null
+//            RoleEntity obj = roleRepo.findById(id).orElseGet(RoleEntity::new
+            );
             mapdata.put("status", 200);
             mapdata.put("msg", "Data Fetched SuccessFully");
             mapdata.put("data", obj);
