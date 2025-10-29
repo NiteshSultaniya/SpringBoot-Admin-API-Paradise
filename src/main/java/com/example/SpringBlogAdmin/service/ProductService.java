@@ -39,24 +39,20 @@ public class ProductService {
     }
 
 
-    public Map<String, Object> allProduct(int page, int size, String filterdata) {
+    public Map<String, Object> allProduct(int page, int size) {
         Long userId=jwtService.extractUserId();
 
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<ProductEntity> productdata = null;
-            if ("all".equals(filterdata)) {
+            if(userId==1759921174795L)
+            {
+                productdata = productRepo.findByStatus(1,pageable);
+            }else{
                 productdata = productRepo.findByUserId(userId,pageable);
-            } else if ("active".equals(filterdata)) {
-                productdata = productRepo.findByStatusAndUserId(1,userId, pageable);
-            } else if ("inactive".equals(filterdata)) {
-                productdata = productRepo.findByStatusAndUserId(0,userId, pageable);
             }
 
-            mapdata.put("allproductcount", productRepo.count());
-            mapdata.put("activeproductcount", productRepo.countByStatus(1));
-            mapdata.put("inactiveproductcount", productRepo.countByStatus(0));
             if (productdata.isEmpty()) {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Data Not Found");

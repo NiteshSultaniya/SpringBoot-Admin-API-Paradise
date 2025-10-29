@@ -28,4 +28,3 @@ public class EmailService {
         System.out.println("Email sent to " + emailDTO.getTo());
     }
 }
-

@@ -22,10 +22,9 @@ public class ProductController {
     public ResponseEntity<?> allProduct(@RequestParam Map<String, String> params) {
         int page = Integer.parseInt(params.getOrDefault("page", "0"));
         int size = Integer.parseInt(params.getOrDefault("size", "5"));
-        String filterstatus = params.getOrDefault("filterstatus", "all");
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            Map<String, Object> obj = productService.allProduct(page,size,filterstatus);
+            Map<String, Object> obj = productService.allProduct(page,size);
             return ResponseEntity.ok(obj);
         } catch (Exception e) {
             mapdata.put("status", 400);
