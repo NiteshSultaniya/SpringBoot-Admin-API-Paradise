@@ -21,7 +21,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
         ErrorResponse errorResponse = new ErrorResponse(false, HttpStatus.UNAUTHORIZED.value(), "UNAUTHORIZED", authException.getMessage() != null ? authException.getMessage() : "Access denied", request.getRequestURI(), Instant.now().toString());
 
         ObjectMapper mapper = new ObjectMapper();

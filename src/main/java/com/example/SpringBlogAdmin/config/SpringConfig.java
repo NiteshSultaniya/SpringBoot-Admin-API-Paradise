@@ -4,6 +4,8 @@ package com.example.SpringBlogAdmin.config;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -21,9 +23,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
-//import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
 @EnableWebSecurity
@@ -71,7 +73,7 @@ public class SpringConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/","http://10.24.112.182:5173/","http://10.24.112.115:5173/"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -79,5 +81,24 @@ public class SpringConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    //    Email Bean
+    @Bean
+    public SimpleMailMessage simpleMailMessage() {
+        return new SimpleMailMessage();
+    }
+
+
+    //    Email multithreading
+    @Bean(name = "emailExecutor")
+    public Executor emailExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);      // hamesha itne threads ready rahenge
+        executor.setMaxPoolSize(5);       // load badhne pe max itne threads
+        executor.setQueueCapacity(100);   // agar sab threads busy hain, itne tasks queue mein rukenge
+        executor.setThreadNamePrefix("EmailThread-");
+        executor.initialize();
+        return executor;
     }
 }
