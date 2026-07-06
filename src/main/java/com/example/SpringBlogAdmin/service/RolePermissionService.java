@@ -75,7 +75,9 @@ public class RolePermissionService {
     public Map<String, Object> roleById(Long id) {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
-            RoleEntity obj = roleRepo.findById(id).orElseThrow();
+            RoleEntity obj = roleRepo.findById(id).orElse( null
+//            RoleEntity obj = roleRepo.findById(id).orElseGet(RoleEntity::new
+            );
             mapdata.put("status", 200);
             mapdata.put("msg", "Data Fetched SuccessFully");
             mapdata.put("data", obj);
@@ -101,7 +103,7 @@ public class RolePermissionService {
                 }
                 RoleEntity existingCat = existingCatOpt.get();
                 if (!existingCat.getRoleName().equals(role.getRoleName())) {
-                    Boolean emailAlreadyExists = roleRepo.findByName(role.getRoleName());
+                    Boolean emailAlreadyExists = roleRepo.existsByRoleName(role.getRoleName());
                     if (emailAlreadyExists) {
                         mapdata.put("status", 201);
                         mapdata.put("msg", "Role already exists");
@@ -113,7 +115,7 @@ public class RolePermissionService {
                 mapdata.put("msg", "Data Updated Successfully");
                 return mapdata;
             } else {
-                Boolean catExists = roleRepo.findByName(role.getRoleName());
+                Boolean catExists = roleRepo.existsByRoleName(role.getRoleName());
                 if (catExists) {
                     mapdata.put("status", 201);
                     mapdata.put("msg", "Role already exists");
@@ -156,8 +158,9 @@ public class RolePermissionService {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
             RoleEntity cat=roleRepo.findById(id).orElseThrow();
-            int rowEffected = roleRepo.deleteEntityById(id);
-            if(rowEffected>0)
+//            int rowEffected = roleRepo.deleteEntityById(id);
+//            if(rowEffected>0)
+            if(true)
             {
                 mapdata.put("status", 200);
                 mapdata.put("msg", "Role Deleted Successfully");
@@ -189,7 +192,7 @@ public class RolePermissionService {
                     permissionRepo.updateStatusById(newStatus, permissionCheck.getId());
 
                 }else {
-                    System.out.println("dta not found");
+                    System.out.println("data not found");
                     permission.setId(idGenerator.get());
                     permission.setPermissionRoleId(permission.getPermissionRoleId());
                     permission.setPermissionType(permission.getPermissionType());

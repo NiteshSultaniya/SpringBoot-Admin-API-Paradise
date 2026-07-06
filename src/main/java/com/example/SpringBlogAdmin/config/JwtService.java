@@ -5,8 +5,10 @@ import com.example.SpringBlogAdmin.entity.AdminEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,19 +16,22 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 @Service
 public class JwtService {
     public SecretKey secretKey;
     private String STATIC_SECRET_KEY;
+    private HttpServletRequest request;
 
 
-    public JwtService(@Value("${STATIC_SECRET_KEY}") String STATIC_SECRET_KEY) {
+    public JwtService(@Value("${STATIC_SECRET_KEY}") String STATIC_SECRET_KEY,HttpServletRequest request) {
         System.out.println(STATIC_SECRET_KEY);
         byte[] secreateKey = STATIC_SECRET_KEY.getBytes();
 
         this.secretKey = Keys.hmacShaKeyFor(secreateKey);
+        this.request = request;
     }
 
     public String generateToken(AdminEntity user,Map<String, Object> claims) {
@@ -45,6 +50,15 @@ public class JwtService {
     public String extractUserName(String token) {
         return extractClaims(token, Claims::getSubject);
     }
+
+    public Long   extractUserId() {
+        final String authHeader=request.getHeader("Authorization");
+        final String token=authHeader.substring(7);
+        Object userId = extractClaims(token).get("userId");
+        return userId != null ? Long.parseLong(userId.toString()) : null;
+
+    }
+
     public String extractpassword(String token) {
         return extractClaims(token, Claims::getId);
     }

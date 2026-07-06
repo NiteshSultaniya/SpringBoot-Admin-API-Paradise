@@ -124,10 +124,15 @@ public class AdminService {
                     data.put("msg", "Email already exists");
                     return data;
                 } else {
+                    if(user.getId()==0)
+                    {
+                        RoleEntity guestRoleData=roleRepo.findByRoleName("GUEST");
+                    user.setRoleId(guestRoleData.getId());
+
+                    }
                     user.setId(idGenerator.get());
                     user.setEmail(user.getEmail().trim());
                     user.setPassword(passwordEncoder.encode(user.getPassword()));
-                    user.setRoleId(user.getRoleId());
                     if(roleData.isPresent())
                     {
                     user.setRoleName(roleData.get().getRoleName());
@@ -153,6 +158,12 @@ public class AdminService {
         Map<String, Object> mapdata = new LinkedHashMap<>();
         try {
             AdminEntity cat = adminRepo.findById(id).orElseThrow();
+            if(cat.getId()==1759921174795L)
+            {
+                mapdata.put("status", 201);
+                mapdata.put("msg", "User Can Not Be Deleted");
+                return mapdata;
+            }
             int rowEffected = adminRepo.deleteEntityById(id);
             if (rowEffected > 0) {
                 mapdata.put("status", 200);
@@ -185,7 +196,6 @@ public class AdminService {
                 claims.put("roleName", admindata.getRoleName());
                 claims.put("userId", admindata.getId());
                 String token = jwtService.generateToken(admindata, claims);
-                mapdata.put("roleName", admindata.getRoleName());
                 mapdata.put("token", token);
                 mapdata.put("status", "Success");
                 return mapdata;

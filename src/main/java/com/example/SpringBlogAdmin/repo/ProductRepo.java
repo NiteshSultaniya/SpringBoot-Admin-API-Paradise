@@ -21,9 +21,7 @@ public interface ProductRepo extends BaseRepository<ProductEntity,Long> {
     @Query(value = "SELECT * FROM cs_product p WHERE FIND_IN_SET(:id, p.product_cat_id)", nativeQuery = true)
     List<ProductEntity> findProductByCategory(@Param("id") Long id);
 
+    Page<ProductEntity> findByUserId(Long userId, Pageable pageable);
 
-    Page<ProductEntity> findByStatus(int status, Pageable pageable);
-
-    long countByStatus(int status);
-
+    Page<ProductEntity> findByStatus(int status,Pageable pageable);
 }

@@ -65,4 +65,7 @@ public class ProductEntity {
     @Column(name = "status")
     private Integer status=1;
 
+    @Column(name = "user_id")
+    private Long userId;
+
 }
