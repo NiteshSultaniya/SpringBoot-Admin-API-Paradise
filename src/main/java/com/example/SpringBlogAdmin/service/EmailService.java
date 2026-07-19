@@ -21,7 +21,6 @@ public class EmailService {
         this.simpleMailMessage=simpleMailMessage;
     }
 
-
     public CompletableFuture<String> sendEmail()
     {
         Map<String,Object> obj=new HashMap<>();
