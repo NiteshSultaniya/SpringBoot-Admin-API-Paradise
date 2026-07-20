@@ -59,4 +59,16 @@ public class PaymentController {
         }
     }
 
+    @GetMapping("/all-order")
+    public ResponseEntity<?> order()
+    {
+        Map<String, Object> mapData = new HashMap<>();
+        try {
+            Map<String, Object> obj =paymentService.order();
+            return ResponseEntity.ok(obj);
+        } catch (Exception e) {
+            return ResponseEntity.ok(mapData);
+        }
+    }
+
 }

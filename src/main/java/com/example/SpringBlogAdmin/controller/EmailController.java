@@ -19,18 +19,18 @@ public class EmailController {
         this.emailService = emailService;
     }
 
-    @GetMapping("/send-email")
-    public ResponseEntity<?> sendEmail() {
-        Map<String, Object> obj = new HashMap<>();
-        try {
-            CompletableFuture<String> completableFuture = emailService.sendEmail();
-            System.out.println(completableFuture.isDone());
-            System.out.println("first excussion");
-                obj.put("after send","msg send succefully");
-            return ResponseEntity.ok(obj);
-        } catch (Exception e) {
-            obj.put("error",e.getMessage());
-            return ResponseEntity.ok(obj);
-        }
-    }
+//    @GetMapping("/send-email")
+//    public ResponseEntity<?> sendEmail() {
+//        Map<String, Object> obj = new HashMap<>();
+//        try {
+//            CompletableFuture<String> completableFuture = emailService.sendEmail("");
+//            System.out.println(completableFuture.isDone());
+//            System.out.println("first excussion");
+//                obj.put("after send","msg send succefully");
+//            return ResponseEntity.ok(obj);
+//        } catch (Exception e) {
+//            obj.put("error",e.getMessage());
+//            return ResponseEntity.ok(obj);
+//        }
+//    }
 }

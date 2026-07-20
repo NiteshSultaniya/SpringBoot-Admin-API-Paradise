@@ -37,10 +37,10 @@ public class PaymentOrderEntity {
     @Column(length = 50)
     private String status = "CREATED";
 
-    private Long userId;
+    private String email;
 
-    private String userEmail;
+    private String name;
 
-    private String userName;
+    private Long contact;
 
 }

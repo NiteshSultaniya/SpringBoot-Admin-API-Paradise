@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Successful</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f4f4">
+    <tr>
+        <td align="center">
+
+            <table width="600" cellpadding="0" cellspacing="0"
+                   style="background:#ffffff;margin:30px auto;border-radius:8px;overflow:hidden;">
+
+                <tr>
+                    <td style="background:#28a745;padding:20px;text-align:center;">
+                        <h2 style="color:white;margin:0;">Payment Successful</h2>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:30px;">
+
+                        <p>Hello <b>{{customerName}}</b>,</p>
+
+                        <p>Your payment has been received successfully.</p>
+
+                        <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;">
+
+                            <tr>
+                                <td><b>Order ID</b></td>
+                                <td>{{orderId}}</td>
+                            </tr>
+
+                            <tr>
+                                <td><b>Payment ID</b></td>
+                                <td>{{paymentId}}</td>
+                            </tr>
+
+                            <tr>
+                                <td><b>Amount</b></td>
+                                <td>₹{{amount}}</td>
+                            </tr>
+
+                            <tr>
+                                <td><b>Payment Method</b></td>
+                                <td>{{paymentMethod}}</td>
+                            </tr>
+
+                            <tr>
+                                <td><b>Status</b></td>
+                                <td style="color:green;"><b>SUCCESS</b></td>
+                            </tr>
+
+                        </table>
+
+                        <br>
+
+                        <p>
+                            Thank you for shopping with us.
+                        </p>
+
+                        <p>
+                            Regards,<br>
+                            <b>Your Company Name</b>
+                        </p>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background:#f8f8f8;padding:15px;text-align:center;font-size:12px;color:#777;">
+                        This is an automated email. Please do not reply.
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

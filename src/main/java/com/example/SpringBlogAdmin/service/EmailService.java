@@ -1,5 +1,8 @@
 package com.example.SpringBlogAdmin.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.razorpay.Payment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -21,9 +24,10 @@ public class EmailService {
         this.simpleMailMessage=simpleMailMessage;
     }
 
-    public CompletableFuture<String> sendEmail()
-    {
+    public CompletableFuture<String> sendEmail(Payment paymentDetails) throws JsonProcessingException {
         Map<String,Object> obj=new HashMap<>();
+        obj.put("data", new ObjectMapper().readValue(paymentDetails.toString(), Map.class));
+
         try {
 //            SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
             simpleMailMessage.setTo("aimnikku07@gmail.com");

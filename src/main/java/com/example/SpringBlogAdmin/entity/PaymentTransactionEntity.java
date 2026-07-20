@@ -1,12 +1,16 @@
 package com.example.SpringBlogAdmin.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -14,6 +18,8 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Table(name = "payment_transactions")
+//@JsonIgnoreProperties({"razorpaySignature"})
+
 public class PaymentTransactionEntity {
 
     @Id
@@ -42,6 +48,12 @@ public class PaymentTransactionEntity {
     @Column(length = 100)
     private String errorCode;
 
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
 }
