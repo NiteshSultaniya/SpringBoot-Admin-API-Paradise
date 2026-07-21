@@ -26,8 +26,6 @@ public class PaymentTransactionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String orderId;
 
     @Column(unique = true)
     private String razorpayPaymentId;

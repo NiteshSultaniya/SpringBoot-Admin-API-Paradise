@@ -11,10 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PaymentService {
@@ -26,7 +23,7 @@ public class PaymentService {
     @Value("${RAZORPAY_KEY_SECRET}")
     String KEY_SECRET;
 
-    public PaymentService(PaymentOrderRepository paymentOrderRepository, PaymentTransactionRepository paymentTransactionRepository,EmailService emailService) {
+    public PaymentService(PaymentOrderRepository paymentOrderRepository, PaymentTransactionRepository paymentTransactionRepository, EmailService emailService) {
         this.paymentTransactionRepository = paymentTransactionRepository;
         this.paymentOrderRepository = paymentOrderRepository;
         this.emailService = emailService;
@@ -79,19 +76,19 @@ public class PaymentService {
             }
             RazorpayClient client = new RazorpayClient(KEY_ID, KEY_SECRET);
             Payment paymentDetails = client.payments.fetch(paymentTransactionEntity.getRazorpayPaymentId());
-            obj.put("data", new ObjectMapper().readValue(paymentDetails.toString(), Map.class));
-
+//            obj.put("data", new ObjectMapper().readValue(paymentDetails.toString(), Map.class));
+//            System.out.println(paymentOrderDetails);
+//            obj.put("data", new ObjectMapper().readValue(paymentOrderDetails.toString(), Map.class));
             paymentTransactionEntity.setAmount(Long.valueOf((Integer) paymentDetails.get("amount")) / 100);
             paymentTransactionEntity.setErrorCode(getStringOrNull(paymentDetails, "error_code"));
-            paymentTransactionEntity.setOrderId(paymentTransactionEntity.getOrderId());
             paymentTransactionEntity.setPaymentMethod(getStringOrNull(paymentDetails, "method"));
             paymentTransactionEntity.setRazorpayOrderId(paymentTransactionEntity.getRazorpayOrderId());
             paymentTransactionEntity.setRazorpayPaymentId(paymentTransactionEntity.getRazorpayPaymentId());
             paymentTransactionEntity.setRazorpaySignature(paymentTransactionEntity.getRazorpaySignature());
             paymentTransactionEntity.setStatus(getStringOrNull(paymentDetails, "status"));
             paymentTransactionRepository.save(paymentTransactionEntity);
-//            emailService.sendEmail(paymentDetails);
-
+            Optional<PaymentOrderEntity> paymentOrderDetails = paymentOrderRepository.findByRazorpayOrderId(paymentTransactionEntity.getRazorpayOrderId());
+            emailService.sendEmail(paymentDetails, paymentOrderDetails);
 
 
             obj.put("status", 200);
@@ -113,14 +110,14 @@ public class PaymentService {
             if (paymentDetails != null && "failed".equals(getStringOrNull(paymentDetails, "status"))) {
                 paymentTransactionEntity.setAmount(Long.valueOf((Integer) paymentDetails.get("amount")) / 100);
                 paymentTransactionEntity.setErrorCode(getStringOrNull(paymentDetails, "error_code"));
-                paymentTransactionEntity.setOrderId(getStringOrNull(paymentDetails, "order_id"));
+                paymentTransactionEntity.setRazorpayOrderId(getStringOrNull(paymentDetails, "order_id"));
                 paymentTransactionEntity.setPaymentMethod(getStringOrNull(paymentDetails, "method"));
                 paymentTransactionEntity.setRazorpayOrderId(null);
                 paymentTransactionEntity.setRazorpayPaymentId(paymentTransactionEntity.getRazorpayPaymentId());
                 paymentTransactionEntity.setRazorpaySignature(null);
                 paymentTransactionEntity.setStatus(getStringOrNull(paymentDetails, "status"));
 //                paymentTransactionRepository.save(paymentTransactionEntity);
-            obj.put("data", new ObjectMapper().readValue(paymentDetails.toString(), Map.class));
+                obj.put("data", new ObjectMapper().readValue(paymentDetails.toString(), Map.class));
                 obj.put("status", 200);
                 obj.put("msg", "Payment failed");
             } else {
